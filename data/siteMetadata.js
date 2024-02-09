@@ -11,7 +11,7 @@ const siteMetadata = {
   siteLogo: '/static/images/logo-enjoyart.svg',
   socialBanner: '/static/images/twitter-card.png',
 //  mastodon: 'https://mastodon.social/@mastodonuser',
-  email: 'arnold@enjoyart.org',
+  email: 'ronald@enjoyart.org',
   github: 'https://github.com/enjoy-art',
 //  twitter: 'https://twitter.com/Twitter',
 //  facebook: 'https://facebook.com',
