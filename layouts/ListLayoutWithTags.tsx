@@ -8,7 +8,7 @@ import { CoreContent } from 'pliny/utils/contentlayer'
 import type { Blog } from 'contentlayer/generated'
 import Link from '@/components/Link'
 import Tag from '@/components/Tag'
-import Image from '@/components/Image';
+import Image from '@/components/Image'
 import siteMetadata from '@/data/siteMetadata'
 import tagData from 'app/tag-data.json'
 
@@ -127,15 +127,15 @@ export default function ListLayoutWithTags({
                 return (
                   <li key={path} className="py-5">
                     <article className="flex flex-col space-y-2 xl:space-y-0">
-                        <div className="py-0 pr-0">
-                          <Image
-                            alt={title}
-                            src={images[0]}
-                            className="object-cover object-center"
-                            width={215}
-                            height={150}
-                          />
-                        </div>
+                      <div className="py-0 pr-0">
+                        <Image
+                          alt={title}
+                          src={images[0]}
+                          className="object-cover object-center"
+                          width={215}
+                          height={150}
+                        />
+                      </div>
 
                       <div className="space-y-3">
                         <div>

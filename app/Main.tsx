@@ -3,7 +3,7 @@ import Tag from '@/components/Tag'
 import siteMetadata from '@/data/siteMetadata'
 import { formatDate } from 'pliny/utils/formatDate'
 import NewsletterForm from 'pliny/ui/NewsletterForm'
-import Image from '@/components/Image';
+import Image from '@/components/Image'
 
 const MAX_DISPLAY = 5
 
@@ -28,15 +28,15 @@ export default function Home({ posts }) {
               <li key={slug} className="py-12">
                 <article>
                   <div className="space-y-2 xl:grid xl:grid-cols-4 xl:items-start xl:space-y-0">
-                        <div className="py-0 pr-0">
-                          <Image
-                            alt={title}
-                            src={images[0]}
-                            className="object-cover object-center "
-                            width={215}
-                            height={150}
-                          />
-                        </div>
+                    <div className="py-0 pr-0">
+                      <Image
+                        alt={title}
+                        src={images[0]}
+                        className="object-cover object-center "
+                        width={215}
+                        height={150}
+                      />
+                    </div>
 
                     <div className="space-y-5 xl:col-span-3">
                       <div className="space-y-6">

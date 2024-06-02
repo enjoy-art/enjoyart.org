@@ -7,9 +7,8 @@ import { CoreContent } from 'pliny/utils/contentlayer'
 import type { Blog } from 'contentlayer/generated'
 import Link from '@/components/Link'
 import Tag from '@/components/Tag'
-import Image from '@/components/Image';
+import Image from '@/components/Image'
 import siteMetadata from '@/data/siteMetadata'
-
 
 interface PaginationProps {
   totalPages: number
@@ -119,15 +118,15 @@ export default function ListLayout({
             return (
               <li key={path} className="py-4">
                 <article className="space-y-2 xl:grid xl:grid-cols-4 xl:items-baseline xl:space-y-0">
-                      <div className="py-0 pr-0">
-                        <Image
-                          alt={title}
-                          src={images[0]}
-                          className="mt-10 object-cover object-center"
-                          width={215}
-                          height={150}
-                        />
-                      </div>
+                  <div className="py-0 pr-0">
+                    <Image
+                      alt={title}
+                      src={images[0]}
+                      className="mt-10 object-cover object-center"
+                      width={215}
+                      height={150}
+                    />
+                  </div>
                   <div className="space-y-3 xl:col-span-3">
                     <div>
                       <h3 className="text-2xl font-bold leading-8 tracking-tight">
