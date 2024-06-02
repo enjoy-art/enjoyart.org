@@ -7,6 +7,7 @@ import { CoreContent } from 'pliny/utils/contentlayer'
 import type { Blog } from 'contentlayer/generated'
 import Link from '@/components/Link'
 import Tag from '@/components/Tag'
+import Image from '@/components/Image';
 import siteMetadata from '@/data/siteMetadata'
 
 
