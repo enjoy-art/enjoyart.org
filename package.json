@@ -64,7 +64,8 @@
     "@opentelemetry/resources": "1.13.0",
     "@opentelemetry/sdk-trace-base": "1.13.0",
     "@opentelemetry/sdk-trace-node": "1.13.0",
-    "@opentelemetry/semantic-conventions": "1.13.0"
+    "@opentelemetry/semantic-conventions": "1.13.0",
+    "ajv": "8.17.1"
   },
   "lint-staged": {
     "*.+(js|jsx|ts|tsx)": [
