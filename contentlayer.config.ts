@@ -42,24 +42,72 @@ const computedFields: ComputedFields = {
   toc: { type: 'string', resolve: (doc) => extractTocHeadings(doc.body.raw) },
 }
 
+// Tag category prefixes
+const CATEGORY_PREFIXES = {
+  'artist:': 'artist',
+  'movement:': 'movement',
+  'location:': 'location',
+}
+
+function parseTag(tag: string): { category: string; value: string; slug: string } {
+  for (const [prefix, category] of Object.entries(CATEGORY_PREFIXES)) {
+    if (tag.toLowerCase().startsWith(prefix.toLowerCase())) {
+      const value = tag.slice(prefix.length).trim()
+      return { category, value, slug: slug(value) }
+    }
+  }
+  return { category: 'tag', value: tag, slug: slug(tag) }
+}
+
 /**
- * Count the occurrences of all tags across blog posts and write to json file
+ * Count the occurrences of all tags across blog posts and write to json files
+ * Generates both a flat tag count and categorized tag counts
  */
 function createTagCount(allBlogs) {
   const tagCount: Record<string, number> = {}
+  const categorizedCounts = {
+    artist: {} as Record<string, number>,
+    movement: {} as Record<string, number>,
+    location: {} as Record<string, number>,
+    tag: {} as Record<string, number>,
+  }
+  // Store original display values for each slug
+  const tagDisplayValues = {
+    artist: {} as Record<string, string>,
+    movement: {} as Record<string, string>,
+    location: {} as Record<string, string>,
+    tag: {} as Record<string, string>,
+  }
+
   allBlogs.forEach((file) => {
     if (file.tags && (!isProduction || file.draft !== true)) {
       file.tags.forEach((tag) => {
-        const formattedTag = slug(tag)
+        const parsed = parseTag(tag)
+        const formattedTag = parsed.slug
+
+        // Flat count (for backward compatibility with /tags)
         if (formattedTag in tagCount) {
           tagCount[formattedTag] += 1
         } else {
           tagCount[formattedTag] = 1
         }
+
+        // Categorized count
+        if (formattedTag in categorizedCounts[parsed.category]) {
+          categorizedCounts[parsed.category][formattedTag] += 1
+        } else {
+          categorizedCounts[parsed.category][formattedTag] = 1
+          tagDisplayValues[parsed.category][formattedTag] = parsed.value
+        }
       })
     }
   })
+
   writeFileSync('./app/tag-data.json', JSON.stringify(tagCount))
+  writeFileSync(
+    './app/tag-data-categorized.json',
+    JSON.stringify({ counts: categorizedCounts, displayValues: tagDisplayValues })
+  )
 }
 
 function createSearchIndex(allBlogs) {
