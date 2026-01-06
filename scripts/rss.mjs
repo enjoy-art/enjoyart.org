@@ -7,6 +7,17 @@ import tagData from '../app/tag-data.json' with { type: 'json' }
 import { allBlogs } from '../.contentlayer/generated/index.mjs'
 import { sortPosts } from 'pliny/utils/contentlayer.js'
 
+// Parse tag to extract slug (handles prefixed tags like 'artist:Name')
+const CATEGORY_PREFIXES = ['artist:', 'movement:', 'location:']
+function getTagSlug(tag) {
+  for (const prefix of CATEGORY_PREFIXES) {
+    if (tag.toLowerCase().startsWith(prefix.toLowerCase())) {
+      return slug(tag.slice(prefix.length).trim())
+    }
+  }
+  return slug(tag)
+}
+
 const generateRssItem = (config, post) => `
   <item>
     <guid>${config.siteUrl}/blog/${post.slug}</guid>
@@ -45,10 +56,11 @@ async function generateRSS(config, allBlogs, page = 'feed.xml') {
 
   if (publishPosts.length > 0) {
     for (const tag of Object.keys(tagData)) {
-      const filteredPosts = allBlogs.filter((post) =>
-        post.tags.map((t) => slug(t)).includes(tag)
+      const filteredPosts = allBlogs.filter(
+        (post) => post.tags && post.tags.map((t) => getTagSlug(t)).includes(tag)
       )
-      const rss = generateRss(config, filteredPosts, `tags/${tag}/${page}`)
+      if (filteredPosts.length === 0) continue
+      const rss = generateRss(config, sortPosts(filteredPosts), `tags/${tag}/${page}`)
       const rssPath = path.join('public', 'tags', tag)
       mkdirSync(rssPath, { recursive: true })
       writeFileSync(path.join(rssPath, page), rss)

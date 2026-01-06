@@ -1,5 +1,6 @@
 import Link from 'next/link'
-import { slug } from 'github-slugger'
+import { getTagUrl, getTagDisplayValue } from '@/lib/tagUtils'
+
 interface Props {
   text: string
 }
@@ -7,10 +8,10 @@ interface Props {
 const Tag = ({ text }: Props) => {
   return (
     <Link
-      href={`/tags/${slug(text)}`}
+      href={getTagUrl(text)}
       className="mr-3 text-sm font-medium text-primary-500 hover:text-primary-600 dark:hover:text-primary-400"
     >
-      {text.split(' ').join(' ')}
+      {getTagDisplayValue(text)}
     </Link>
   )
 }

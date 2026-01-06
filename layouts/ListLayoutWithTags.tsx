@@ -12,6 +12,31 @@ import Image from '@/components/Image'
 import siteMetadata from '@/data/siteMetadata'
 import tagData from 'app/tag-data.json'
 
+// Import categorized tag data
+let tagDataCategorized: {
+  counts: {
+    artist: Record<string, number>
+    movement: Record<string, number>
+    location: Record<string, number>
+    tag: Record<string, number>
+  }
+  displayValues: {
+    artist: Record<string, string>
+    movement: Record<string, string>
+    location: Record<string, string>
+    tag: Record<string, string>
+  }
+} = {
+  counts: { artist: {}, movement: {}, location: {}, tag: {} },
+  displayValues: { artist: {}, movement: {}, location: {}, tag: {} },
+}
+
+try {
+  tagDataCategorized = require('app/tag-data-categorized.json')
+} catch {
+  // File doesn't exist yet
+}
+
 interface PaginationProps {
   totalPages: number
   currentPage: number
@@ -63,6 +88,70 @@ function Pagination({ totalPages, currentPage }: PaginationProps) {
   )
 }
 
+// Helper component for rendering a category section in sidebar
+function CategorySection({
+  title,
+  basePath,
+  counts,
+  displayValues,
+  pathname,
+}: {
+  title: string
+  basePath: string
+  counts: Record<string, number>
+  displayValues: Record<string, string>
+  pathname: string
+}) {
+  const keys = Object.keys(counts)
+  if (keys.length === 0) return null
+
+  const sortedKeys = keys.sort((a, b) => counts[b] - counts[a]).slice(0, 10) // Show top 10
+
+  return (
+    <div className="mb-4">
+      <Link
+        href={basePath}
+        className="font-bold uppercase text-gray-700 hover:text-primary-500 dark:text-gray-300 dark:hover:text-primary-500"
+      >
+        {title}
+      </Link>
+      <ul>
+        {sortedKeys.map((key) => {
+          const displayName = displayValues[key] || key
+          const isActive = pathname === `${basePath}/${key}`
+          return (
+            <li key={key} className="my-1">
+              {isActive ? (
+                <span className="inline px-3 py-1 text-sm font-bold text-primary-500">
+                  {`${displayName} (${counts[key]})`}
+                </span>
+              ) : (
+                <Link
+                  href={`${basePath}/${key}`}
+                  className="px-3 py-1 text-sm font-medium text-gray-500 hover:text-primary-500 dark:text-gray-300 dark:hover:text-primary-500"
+                  aria-label={`View ${displayName}`}
+                >
+                  {`${displayName} (${counts[key]})`}
+                </Link>
+              )}
+            </li>
+          )
+        })}
+        {keys.length > 10 && (
+          <li className="my-1">
+            <Link
+              href={basePath}
+              className="px-3 py-1 text-sm font-medium italic text-gray-400 hover:text-primary-500 dark:text-gray-500 dark:hover:text-primary-500"
+            >
+              View all {keys.length}...
+            </Link>
+          </li>
+        )}
+      </ul>
+    </div>
+  )
+}
+
 export default function ListLayoutWithTags({
   posts,
   title,
@@ -73,6 +162,9 @@ export default function ListLayoutWithTags({
   const tagCounts = tagData as Record<string, number>
   const tagKeys = Object.keys(tagCounts)
   const sortedTags = tagKeys.sort((a, b) => tagCounts[b] - tagCounts[a])
+
+  // Get categorized data
+  const { counts: categorizedCounts, displayValues } = tagDataCategorized
 
   const displayPosts = initialDisplayPosts.length > 0 ? initialDisplayPosts : posts
 
@@ -97,27 +189,72 @@ export default function ListLayoutWithTags({
                   All Works
                 </Link>
               )}
-              <ul>
-                {sortedTags.map((t) => {
-                  return (
-                    <li key={t} className="my-3">
-                      {pathname.split('/tags/')[1] === slug(t) ? (
-                        <h3 className="inline px-3 py-2 text-sm font-bold uppercase text-primary-500">
-                          {`${t} (${tagCounts[t]})`}
-                        </h3>
-                      ) : (
-                        <Link
-                          href={`/tags/${slug(t)}`}
-                          className="px-3 py-2 text-sm font-medium uppercase text-gray-500 hover:text-primary-500 dark:text-gray-300 dark:hover:text-primary-500"
-                          aria-label={`View posts tagged ${t}`}
-                        >
-                          {`${t} (${tagCounts[t]})`}
-                        </Link>
-                      )}
+
+              {/* Categorized sections */}
+              <div className="mt-4">
+                <CategorySection
+                  title="Artists"
+                  basePath="/artists"
+                  counts={categorizedCounts.artist}
+                  displayValues={displayValues.artist}
+                  pathname={pathname}
+                />
+                <CategorySection
+                  title="Movements"
+                  basePath="/movements"
+                  counts={categorizedCounts.movement}
+                  displayValues={displayValues.movement}
+                  pathname={pathname}
+                />
+                <CategorySection
+                  title="Locations"
+                  basePath="/locations"
+                  counts={categorizedCounts.location}
+                  displayValues={displayValues.location}
+                  pathname={pathname}
+                />
+              </div>
+
+              {/* Generic tags section */}
+              <div className="mt-4">
+                <Link
+                  href="/tags"
+                  className="font-bold uppercase text-gray-700 hover:text-primary-500 dark:text-gray-300 dark:hover:text-primary-500"
+                >
+                  Tags
+                </Link>
+                <ul>
+                  {sortedTags.slice(0, 15).map((t) => {
+                    return (
+                      <li key={t} className="my-1">
+                        {pathname.split('/tags/')[1] === slug(t) ? (
+                          <span className="inline px-3 py-1 text-sm font-bold text-primary-500">
+                            {`${t} (${tagCounts[t]})`}
+                          </span>
+                        ) : (
+                          <Link
+                            href={`/tags/${slug(t)}`}
+                            className="px-3 py-1 text-sm font-medium text-gray-500 hover:text-primary-500 dark:text-gray-300 dark:hover:text-primary-500"
+                            aria-label={`View posts tagged ${t}`}
+                          >
+                            {`${t} (${tagCounts[t]})`}
+                          </Link>
+                        )}
+                      </li>
+                    )
+                  })}
+                  {sortedTags.length > 15 && (
+                    <li className="my-1">
+                      <Link
+                        href="/tags"
+                        className="px-3 py-1 text-sm font-medium italic text-gray-400 hover:text-primary-500 dark:text-gray-500 dark:hover:text-primary-500"
+                      >
+                        View all {sortedTags.length}...
+                      </Link>
                     </li>
-                  )
-                })}
-              </ul>
+                  )}
+                </ul>
+              </div>
             </div>
           </div>
           <div>
