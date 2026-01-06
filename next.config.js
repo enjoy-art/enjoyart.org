@@ -63,6 +63,7 @@ module.exports = () => {
     reactStrictMode: true,
     pageExtensions: ['ts', 'tsx', 'js', 'jsx', 'md', 'mdx'],
     images: {
+      deviceSizes: [640, 750, 828, 960, 1080, 1200, 1920, 2048], // removed 3840 to reduce Vercel image cache writes
       remotePatterns: [
         {
           protocol: 'https',
