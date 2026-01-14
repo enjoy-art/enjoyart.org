@@ -64,6 +64,7 @@ module.exports = () => {
     pageExtensions: ['ts', 'tsx', 'js', 'jsx', 'md', 'mdx'],
     images: {
       deviceSizes: [640, 750, 828, 960, 1080, 1200, 1920, 2048], // removed 3840 to reduce Vercel image cache writes
+      minimumCacheTTL: 2678400, // 31 days added per suggestion found in Vercel blog given i did not understand where in absence of an actal number it found a default to apply
       remotePatterns: [
         {
           protocol: 'https',
